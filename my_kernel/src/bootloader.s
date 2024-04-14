@@ -2,8 +2,8 @@
 .globl _start
 
 _start:
-    # new uart & plic init
-    # uart
+    # bootloader
+_uart_init:
     la a0, 0x10000001
     li t0, 0x00
     sw t0, 0(a0)
@@ -27,7 +27,7 @@ _start:
     ori t0, t0, (1 << 0)
     sw  t0, 0(a0)
     csrw mie, t0
-    # plic
+_plic_init:
     la   a0, 0x0c000028
     li   t0, 1
     sw   t0, 0(a0) # set priority
@@ -37,30 +37,41 @@ _start:
     la   a0, 0x0c200000
     li   t0, 0
     sw   t0, 0(a0)
-    # m csr
-    li   t0, (0b01 << 11) | (1 << 7) | (1 << 3) | (1 << 1) | 1
+_mcsr_set:
+    li   t0,      (1 << 11) | (1 << 7) | (1 << 3) | (1 << 1) | 1
     csrw mstatus, t0
-    li   t0, (1 << 11) | (1 << 5) |  (1 << 7) | (1 << 3)
-loop_:
-    la   a0, 0x0c200004
-    lw   t0, 0(a0) # claim
-    beqz t0, loop_
+    li   t0,      (1 << 5) |  (1 << 7) | (1 << 3)
+    csrw mie,     t0
+    la   t0,      _Interrupt
+    csrw mtvec,   t0
+    la   t0,      0x80200000
+    csrw mepc,    t0 # kernel entry
+    li   t0,      (1 << 8)
+    csrw medeleg, t0 # deleg exception to S
+    
+# loop_:
+#     la   a0, 0x0c200004
+#     lw   t0, 0(a0) # claim
+#     beqz t0, loop_
 
-    la   a0, 0x10000000
-    lb   t1, 0(a0)
-    la   a0, 0x10000000
-    sb   t1, 0(a0)
+#     la   a0, 0x10000000
+#     lb   t1, 0(a0)
+#     li   t2, 0x0d
+#     beq  t1, t2, _enter 
+#     la   a0, 0x10000000
+#     sb   t1, 0(a0)
+#     j    _complete
+# _enter:
+#     la   t3, M_mode
+#     lb   t1, 0(t3)
+#     sb   t1, 0(a0) # change line
+    
+# _complete:
+#     la   a0, 0x0c200004
+#     sw   t0, 0(a0)
+#     j    loop_ # complete
 
-    la   a0, 0x0c200004
-    sw   t0, 0(a0)
-    j    loop_ # complete
-    #
-
-    # bootloader (M mode)
-    li t0, 1 << 8
-    csrw medeleg, t0 # deleg trap(exception, interrupt) to S
-
-    # set mtimecmp a1:a0
+timer_init:
     li a1, 0x0
     li a0, 50000000 # 1 second = 10 ^ 7
     la t0, 0x2004000
@@ -69,54 +80,34 @@ loop_:
     sw a1, 4(t0)
     sw a0, 0(t0)
 
-    # set M mode csr
-    li   t0, (0b01 << 11) | (1 << 7) | (1 << 3) | (1 << 1) | 1
-    csrw mstatus, t0
-    li t0, (1 << 11) | (1 << 5) |  (1 << 7) | (1 << 3)
-    csrw mie, t0
-    la t0, _Interrupt
-    csrw mtvec, t0
-    la t0, 0x80200000
-    csrw mepc, t0 # kernel entry
     mret
 
 # time interrupt vector
 _Interrupt:
-    # new
-#     li t0, 0x00
-#     la a0, 0x10000001
-#     sw t0, 0(a0)
-#     li t0, 0x80
-#     la a0, 0x10000003
-#     sw t0, 0(a0)
-#     li t0, 0x03
-#     la a0, 0x10000000
-#     sw t0, 0(a0)
-#     li t0, 0x00
-#     la a0, 0x10000001
-#     sw t0, 0(a0)
-#     li t0, 0x03
-#     la a0, 0x10000003
-#     sw t0, 0(a0)
-#     li t0, 0x07
-#     la a0, 0x10000002
-#     sw t0, 0(a0)
-#     li t0, 0x01
-#     la a0, 0x10000001
-#     sw t0, 0(a0)
-# loop_:
-#     la   a0, M_mode
-#     lb   t0, 0(a0)
-#     la   a0, 0x10000000
-#     sb   t0, 0(a0) # dead in loop_ !
 
-#     la   a0, 0x10000005
-#     lw   t0, 0(a0)
-#     andi t0, t0, 0x01
-#     beqz t0, loop_
-#     la   a0, 0x10000000
-#     lw   t0, 0(a0)
-#     sw   t0, 0(a0)
+    #
+loop_:
+_claim:
+    la   a0, 0x0c200004
+    lw   t0, 0(a0) # claim
+    beqz t0, loop_
+
+    la   a0, 0x10000000
+    lb   t1, 0(a0)
+    li   t2, 0x0d
+    beq  t1, t2, _enter 
+    la   a0, 0x10000000
+    sb   t1, 0(a0)
+    j    _complete
+_enter:
+    la   t3, M_mode
+    lb   t1, 0(t3)
+    sb   t1, 0(a0) # change line
+    
+_complete:
+    la   a0, 0x0c200004
+    sw   t0, 0(a0)
+    j    loop_ # complete
     #
 
     csrr t3, mepc
@@ -179,4 +170,4 @@ _ret:
 .section .data
 M_mode:
     .align 4
-    .asciz "timer interrupt!\n"
+    .asciz "\ntimer interrupt!\n"
