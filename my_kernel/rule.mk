@@ -1,11 +1,11 @@
 CROSS_COMPILE = riscv64-unknown-elf-
-CFLAGS = -nostdlib -fno-builtin -march=rv32g -mabi=ilp32 -g -Wall
+CFLAGS        = -nostdlib -fno-builtin -march=rv32g -mabi=ilp32 -g -Wall
 
-QEMU = qemu-system-riscv32
+QEMU   = qemu-system-riscv32
 QFLAGS = -nographic -smp 1 -machine virt -bios ./bin/bootloader.bin -device loader,file=./bin/kernel.bin,addr=0x80200000
 
-GDB = gdb-multiarch
-CC = ${CROSS_COMPILE}gcc
+GDB     = gdb-multiarch
+CC      = ${CROSS_COMPILE}gcc
 OBJCOPY = ${CROSS_COMPILE}objcopy
 OBJDUMP = ${CROSS_COMPILE}objdump
 
