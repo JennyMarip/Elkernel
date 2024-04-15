@@ -1,9 +1,11 @@
 #include "platform.h"
 
 .section .text
-.globl _start
+.globl   _start
 
 _start:
+    la a0, M_mode
+    call UART_PUTS
     # bootloader (M mode)
 _uart_init:
     # w IER

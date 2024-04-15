@@ -1,3 +1,5 @@
+//@${CC} ${CFLAGS} ${BOOTLOADER} -Ttext=0x80000000 -o ./bin/${BOOT}.elf
+//@${OBJCOPY} -O binary ./bin/${BOOT}.elf             ./bin/${BOOT}.bin
 #include "platform.h"
 
 .section .text
@@ -129,14 +131,14 @@ print_string:
     la a0, UART0   # uart base address
 loop:
     lb   t1, 0(t0)    # 读取字符串中的一个字符
-    beqz t1, done   # 如果字符为0，则跳转到结束
+    beqz t1, done     # 如果字符为0，则跳转到结束
     sb   t1, 0(a0)    # 输出字符到串口
-    addi t0, t0, 1   # 增加字符串地址
-    j    loop  # 继续打印下一个字符
+    addi t0, t0, 1    # 增加字符串地址
+    j    loop         # 继续打印下一个字符
 done:
-    lw   a0, 8(sp)     # 恢复 a0 寄存器的值
-    lw   t1, 4(sp)     # 恢复 t1 寄存器的值
-    lw   t0, 0(sp)     # 恢复 t0 寄存器的值
+    lw   a0, 8(sp)    # 恢复 a0 寄存器的值
+    lw   t1, 4(sp)    # 恢复 t1 寄存器的值
+    lw   t0, 0(sp)    # 恢复 t0 寄存器的值
     addi sp, sp, 12   # 释放栈空间
     li   a0, 0
     ret

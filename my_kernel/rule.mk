@@ -11,10 +11,12 @@ OBJDUMP = ${CROSS_COMPILE}objdump
 
 .DEFAULT_GOAL := all
 all:
-	@${CC} ${CFLAGS} ${SRC} -Ttext=0x80200000 -o ./bin/${EXEC}.elf
-	@${OBJCOPY} -O binary ./bin/${EXEC}.elf ./bin/${EXEC}.bin
-	@${CC} ${CFLAGS} ${BOOTLOADER} -Ttext=0x80000000 -o ./bin/${BOOT}.elf
-	@${OBJCOPY} -O binary ./bin/${BOOT}.elf ./bin/${BOOT}.bin
+	@${CC} ${CFLAGS} ${SRC}        -Ttext=0x80200000 -o ./bin/${EXEC}.elf
+	@${OBJCOPY} -O binary ./bin/${EXEC}.elf             ./bin/${EXEC}.bin
+	@${CC} ${CFLAGS} -c ${BOOTLOADER} -o ./bin/${BOOT}.o
+	@${CC} ${CFLAGS} -c ${UART_SBI}   -o ./bin/${UART}.o
+	@${CC} ${CFLAGS} ./bin/${BOOT}.o ./bin/${UART}.o -Ttext=0x80000000 -o ./bin/${BOOT}.elf
+	@${OBJCOPY} -O binary ./bin/${BOOT}.elf             ./bin/${BOOT}.bin
 
 .PHONY : run
 run: all
