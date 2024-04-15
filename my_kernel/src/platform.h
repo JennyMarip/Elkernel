@@ -2,11 +2,11 @@
 #define __PLATFORM_H__
 
 // UART
-#define UART0 0x10000000L
-#define IER   0x10000001L
-#define LCR   0x10000003L
-#define DLL   0x10000000L
-#define DLM   0x10000001L
+#define UART0           0x10000000L
+#define IER             0x10000001L
+#define LCR             0x10000003L
+#define DLL             0x10000000L
+#define DLM             0x10000001L
 
 // PLIC
 #define UART_PRIORITY   0x0c000028L
@@ -16,6 +16,6 @@
 #define UART_COMPLETE   0x0c200004L
 
 // TIMER
-#define MTIME_CMP 0x2004000L
+#define MTIME_CMP       0x2004000L
 
 #endif

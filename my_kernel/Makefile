@@ -1,6 +1,6 @@
-EXEC     = kernel
-BOOT     = bootloader
-UART     = uart_sbi
+EXEC       = kernel
+BOOT       = bootloader
+UART       = uart_sbi
 
 SRC        = ./src/${EXEC}.S
 BOOTLOADER = ./src/${BOOT}.S

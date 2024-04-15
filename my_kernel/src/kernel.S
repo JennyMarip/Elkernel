@@ -1,19 +1,22 @@
-//@${CC} ${CFLAGS} ${BOOTLOADER} -Ttext=0x80000000 -o ./bin/${BOOT}.elf
-//@${OBJCOPY} -O binary ./bin/${BOOT}.elf             ./bin/${BOOT}.bin
 #include "platform.h"
 
 .section .text
-.globl _start
+.globl   _start
 
 _start:
     # kernel (S mode)
-    li   sp, 0x10000000
-    la   a0, S_mode
-    call print_string
-    la   t0   , _trap_handler
-    csrw stvec, t0
-
-    # task init
+    la   a0   , KERNEL
+    call UART_PUTS
+_scsr_set:
+    la   t0     , _trap_entry
+    csrw stvec  , t0
+    la   t0     , _app0
+    csrw sepc   , t0
+    li   t0     , (1 << 5) | (1 << 1) | 1
+    csrw sstatus, t0
+    li   t0     , (1 << 1) | (1 << 5) | (1 << 9)
+    csrw sie    , t0
+_task_init:
     # set task control block (pc, sp, a0, t0)
     li t0, 0x80308000
     li t1, 0
@@ -32,21 +35,14 @@ _start:
 
     li   sp      , 0x80300000 # app0 user stack (8kb)
     li   t0      , 0x80302000
-    csrw sscratch, t0 # app0 kernel stack (8kb)
+    csrw sscratch, t0         # app0 kernel stack (8kb)
     # app1 user stack : 0x80304000; app1 kernel stack : 0x80306000
-
-    # set csr & enter U
-    la   t0     , _app0
-    csrw sepc   , t0
-    li   t0     , (1 << 5) | (1 << 1) | 1
-    csrw sstatus, t0
-    li   t0     , (1 << 1) | (1 << 5) | (1 << 9)
-    csrw sie    , t0
+_enter_U:
     li   t4     , 0 # task flag (app0 : 0; app1 : 1)
     sret
 
 # trap vector
-_trap_handler:
+_trap_entry:
     mv   t0, sp
     csrr t1, sscratch
     mv   sp, t1 # change stack (user -> kernel)
@@ -60,7 +56,7 @@ _trap_handler:
     beqz t1, _Exception
 
 _Interrupt: # interrupt
-    la   a0, S_mode
+    la   a0, KERNEL
     call print_string
 _end:
     j _end
@@ -88,7 +84,7 @@ _app0_loop:
     beqz t0, app0_print
     j    _app0_loop
 app0_print:
-    la   a0, S_mode
+    la   a0, KERNEL
     addi a0, a0, 32
     call _print
     j    _app0
@@ -100,7 +96,7 @@ _app1_loop:
     beqz t0, app1_print
     j    _app1_loop
 app1_print:
-    la   a0, S_mode
+    la   a0, KERNEL
     addi a0, a0, 64
     call _print
     j    _app1
@@ -144,9 +140,9 @@ done:
     ret
 
 .section .data
-S_mode:
+KERNEL:
     .align 4
-    .asciz "entering kernel\n"
+    .asciz "Welcome to Elkernel!\n"
 app0:
     .align 4
     .asciz "Task 0: Running...\n"
