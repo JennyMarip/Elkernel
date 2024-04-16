@@ -14,7 +14,9 @@ all:
 	@${CC} ${CFLAGS} -c ${UART_SBI}                                    -o ./bin/${UART}.o
 	@${CC} ${CFLAGS} -c ${SRC}                                         -o ./bin/${EXEC}.o
 	@${CC} ${CFLAGS} -c ${BOOTLOADER}                                  -o ./bin/${BOOT}.o
-	@${CC} ${CFLAGS} ./bin/${EXEC}.o ./bin/${UART}.o -Ttext=0x80200000 -o ./bin/${EXEC}.elf
+	@${CC} ${CFLAGS} -c ${USER_APP}                                    -o ./bin/${USER}.o
+	@${CC} ${CFLAGS} -c ${TRAP_VEC}                                    -o ./bin/${TRAP}.o
+	@${CC} ${CFLAGS} ./bin/${EXEC}.o ./bin/${USER}.o ./bin/${TRAP}.o ./bin/${UART}.o -Ttext=0x80200000 -o ./bin/${EXEC}.elf
 	@${CC} ${CFLAGS} ./bin/${BOOT}.o ./bin/${UART}.o -Ttext=0x80000000 -o ./bin/${BOOT}.elf
 	@${OBJCOPY} -O binary ./bin/${EXEC}.elf                               ./bin/${EXEC}.bin
 	@${OBJCOPY} -O binary ./bin/${BOOT}.elf                               ./bin/${BOOT}.bin

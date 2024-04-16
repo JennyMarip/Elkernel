@@ -1,7 +1,8 @@
 #include "platform.h"
+#include "os.h"
 
 .section .text
-.globl   _start
+.global  _start
 
 _start:
     # bootloader (M mode)
@@ -63,7 +64,7 @@ _mcsr_set:
     csrw mie    , t0
     la   t0     , _Interrupt
     csrw mtvec  , t0
-    la   t0     , 0x80200000
+    la   t0     , KERNEL_BASE_ADD
     csrw mepc   , t0 # kernel entry
     li   t0     , (1 << 8)
     csrw medeleg, t0 # deleg exception to S

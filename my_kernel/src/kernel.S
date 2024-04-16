@@ -1,16 +1,18 @@
 #include "platform.h"
+#include "os.h"
 
 .section .text
-.globl   _start
+.global  _start
+.global  sys_print
 
 _start:
     # kernel (S mode)
     la   a0   , KERNEL
     call UART_PUTS
 _scsr_set:
-    la   t0     , _trap_entry
+    la   t0     , _TRAP
     csrw stvec  , t0
-    la   t0     , _app0
+    la   t0     , _SHELL
     csrw sepc   , t0
     li   t0     , (1 << 5) | (1 << 1) | 1
     csrw sstatus, t0
@@ -57,7 +59,7 @@ _trap_entry:
 
 _Interrupt: # interrupt
     la   a0, KERNEL
-    call print_string
+    call sys_print
 _end:
     j _end
 
@@ -67,7 +69,7 @@ _Exception: # exception
     csrw sepc, t0
     sfence.vma
     mv   a0  , a1
-    call print_string # trap handler
+    call sys_print    # trap handler
 
     lw   t0      , 0(sp)
     lw   ra      , 4(sp)
@@ -117,7 +119,7 @@ _print:
     ret
 
 # ---打印字符串函数 (id : 1)---
-print_string:
+sys_print:
     addi sp, sp, -12
     sw   t0, 0(sp)
     sw   t1, 4(sp)
@@ -143,9 +145,6 @@ done:
 KERNEL:
     .align 4
     .asciz "Welcome to Elkernel!\n"
-app0:
+PROMPT:
     .align 4
-    .asciz "Task 0: Running...\n"
-app1:
-    .align 4
-    .asciz "Task 1: Running...\n"
+    .asciz "$ "
