@@ -144,7 +144,7 @@ done:
 .section .data
 KERNEL:
     .align 4
-    .asciz "Welcome to Elkernel!\n"
+    .asciz "Welcome to Elkernel!"
 PROMPT:
     .align 4
-    .asciz "$ "
+    .asciz "\n$ "

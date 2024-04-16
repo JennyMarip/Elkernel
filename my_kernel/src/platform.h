@@ -7,6 +7,7 @@
 #define LCR             0x10000003L
 #define DLL             0x10000000L
 #define DLM             0x10000001L
+#define LSR             0x10000005L
 
 // PLIC
 #define UART_PRIORITY   0x0c000028L

@@ -1,8 +1,28 @@
+#include "os.h"
+
 .section .text
 .global  _SHELL
+.global  atom_loop
 
 _SHELL:
-    la a0, 0x80201210
+    la a0, _PROMPT
+    ecall  # $
+atom_loop:
+    la  a0, SHELL_BUFFER
+    lb  t4, 0(a0)
+    li  t5, 0x01
+    beq t4, t5, read_buffer
+    j   atom_loop
+read_buffer:
+    la   a0, SHELL_BUFFER
+    addi a0, a0, 1
     ecall
-_loop:
-    j _loop
+
+    la   a0, SHELL_BUFFER
+flush_buffer:
+    lb   t4, 0(a0)
+    beqz t4, _SHELL
+    li   t5, 0x00
+    sb   t5, 0(a0)
+    addi a0, a0, 0x01
+    j    flush_buffer

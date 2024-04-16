@@ -82,33 +82,43 @@ timer_init:
 
 # interrupt vector (M)
 _Interrupt:
-    #
-loop_:
 _claim:
     la   a0, UART_CLAIM
     lw   t0, 0(a0) # claim
-    beqz t0, loop_
-
+    beqz t0, _claim
+_handler:
     la   a0, UART0
     lb   t1, 0(a0)
     li   t2, 0x0d
     beq  t1, t2, _enter 
     la   a0, UART0
+    sb   t1, 0(a0) # print
+    la   a0, SHELL_BUFFER
+add_loop:
+    addi a0, a0, 0x01
+    lb   t2, 0(a0)
+    beqz t2, _b1
+    j    add_loop
+_b1:
     sb   t1, 0(a0)
     j    _complete
 _enter:
-    la   t3, TIME_INT
-    lb   t1, 0(t3)
-    sb   t1, 0(a0) # change line
-    
+    la   a0, SHELL_BUFFER
+    li   t2, 1
+    sb   t2, 0(a0)
+    la   a0, TIME_INT
+    lb   t2, 0(a0)
+    la   a0, UART0
+    sb   t2, 0(a0) # enter & change line
+
 _complete:
     la   a0, UART_COMPLETE
-    sw   t0, 0(a0)
-    j    loop_ # complete
-    #
+    sw   t0, 0(a0) # complete
 
-    csrr t3, mepc
-    addi t3, t3, 4 # t3 hold the return address
+    la   a0  , 0x802001b4
+    csrw mepc, a0
+    la   a0  , SHELL_BUFFER
+    mret
 
     la   t5, 0x80308000
     beqz t4, _1_to_2
