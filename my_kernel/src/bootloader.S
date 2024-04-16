@@ -69,14 +69,14 @@ _mcsr_set:
     li   t0     , (1 << 8)
     csrw medeleg, t0 # deleg exception to S
 
-timer_init:
-    li   a1     , 0x0
-    li   a0     , 50000000 # 1 second = 10 ^ 7
-    la   t0     , MTIME_CMP
-    li   t1     , -1
-    sw   t1     , 0(t0)
-    sw   a1     , 4(t0)
-    sw   a0     , 0(t0)
+# timer_init:
+#     li   a1     , 0x0
+#     li   a0     , 50000000 # 1 second = 10 ^ 7
+#     la   t0     , MTIME_CMP
+#     li   t1     , -1
+#     sw   t1     , 0(t0)
+#     sw   a1     , 4(t0)
+#     sw   a0     , 0(t0)
 
     mret
 
