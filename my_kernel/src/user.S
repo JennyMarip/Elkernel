@@ -5,22 +5,23 @@
 .global  atom_loop
 
 _SHELL:
-    la a0, _PROMPT
+    la   a0, _PROMPT
     ecall  # $
 atom_loop:
-
+    # ** delay **
     li   t6, 10000
 _loop:
     addi t6, t6, -1
     beqz t6, loop_end
     j    _loop
 loop_end:
+    # ***********
 
-    la  a0, SHELL_BUFFER
-    lb  t4, 0(a0)
-    li  t5, 0x01
-    beq t4, t5, read_buffer
-    j   atom_loop
+    la   a0, SHELL_BUFFER
+    lb   t4, 0(a0)
+    li   t5, 0x01
+    beq  t4, t5, read_buffer
+    j    atom_loop
 read_buffer:
     la   a0, SHELL_BUFFER
     addi a0, a0, 1

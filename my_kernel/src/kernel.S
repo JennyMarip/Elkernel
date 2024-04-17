@@ -7,40 +7,30 @@
 
 _start:
     # kernel (S mode)
-    la   a0   , KERNEL
+    la   a0     , KERNEL
     call UART_PUTS
 _scsr_set:
     la   t0     , _TRAP
     csrw stvec  , t0
-    la   t0     , _SHELL
+    la   t0     , 0x80300000
     csrw sepc   , t0
     li   t0     , (1 << 5) | (1 << 1) | 1
     csrw sstatus, t0
     li   t0     , (1 << 1) | (1 << 5) | (1 << 9)
     csrw sie    , t0
-_task_init:
-    # set task control block (pc, sp, a0, t0)
-    li t0, 0x80308000
-    li t1, 0
-    la t2, _app0 # app1
-    sw t2, 0(t0)
-    la t2, 0x80300000
-    sw t2,  4(t0)
-    sw t1,  8(t0)
-    sw t1, 12(t0)
-    la t2, _app1 # app2
-    sw t2, 16(t0)
-    la t2, 0x80304000
-    sw t2, 20(t0)
-    sw t1, 24(t0)
-    sw t1, 28(t0)
-
-    li   sp      , 0x80300000 # app0 user stack (8kb)
-    li   t0      , 0x80302000
-    csrw sscratch, t0         # app0 kernel stack (8kb)
-    # app1 user stack : 0x80304000; app1 kernel stack : 0x80306000
-_enter_U:
-    li   t4     , 0 # task flag (app0 : 0; app1 : 1)
+_load_shell:
+    la   a0     , SHELL_FS_ADD
+    la   a1     , 0x80300000
+    li   t0     , SHELL_LEN
+_loop:
+    lb   t1     , 0(a0)
+    sb   t1     , 0(a1)
+    addi a0     , a0, 0x01
+    addi a1     , a1, 0x01
+    addi t0     , t0, -1
+    beqz t0     , load_end
+    j    _loop
+load_end:
     sret
 
 # trap vector
