@@ -136,9 +136,3 @@ done:
 KERNEL:
     .align 4
     .asciz "Welcome to Elkernel!"
-HELLO:
-    .align 4
-    .asciz "Hello, world!"
-PROMPT:
-    .align 4
-    .asciz "\n$ "

@@ -8,11 +8,11 @@
 #define APP_BASE_ADD    0x80300000L
 
 // STRING
-#define _HELLO_WORLD    0x802011f0L
-#define _PROMPT         0x80201200L
+#define _HELLO_WORLD    0x80001350L
+#define _PROMPT         0x80001360L
 
 // BUFFER
-#define SHELL_BUFFER    0x80201210L
+#define SHELL_BUFFER    0x80001370L
 
 // File System
 // shell
