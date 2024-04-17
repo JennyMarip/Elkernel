@@ -1,13 +1,13 @@
 EXEC       = kernel
 BOOT       = bootloader
 UART       = uart_sbi
-USER       = user
+FS         = file_system
 TRAP       = TRAP
 
 SRC        = ./src/${EXEC}.S
 BOOTLOADER = ./src/${BOOT}.S
 UART_SBI   = ./src/${UART}.S
-USER_APP   = ./src/${USER}.S
+FILE_SYS   = ./src/${FS}.S
 TRAP_VEC   = ./src/${TRAP}.S
 
 include ./rule.mk

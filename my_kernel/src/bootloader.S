@@ -115,8 +115,6 @@ _complete:
     la   a0, UART_COMPLETE
     sw   t0, 0(a0) # complete
 
-    la   a0  , 0x802001b4
-    csrw mepc, a0
     la   a0  , SHELL_BUFFER
     mret
 

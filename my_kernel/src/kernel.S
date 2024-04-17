@@ -12,7 +12,7 @@ _start:
 _scsr_set:
     la   t0     , _TRAP
     csrw stvec  , t0
-    la   t0     , 0x80300000
+    la   t0     , APP_BASE_ADD
     csrw sepc   , t0
     li   t0     , (1 << 5) | (1 << 1) | 1
     csrw sstatus, t0
@@ -20,7 +20,7 @@ _scsr_set:
     csrw sie    , t0
 _load_shell:
     la   a0     , SHELL_FS_ADD
-    la   a1     , 0x80300000
+    la   a1     , APP_BASE_ADD
     li   t0     , SHELL_LEN
 _loop:
     lb   t1     , 0(a0)
@@ -28,9 +28,10 @@ _loop:
     addi a0     , a0, 0x01
     addi a1     , a1, 0x01
     addi t0     , t0, -1
-    beqz t0     , load_end
-    j    _loop
-load_end:
+    beqz t0     , _init_shell 
+    j    _loop # load shell byte by byte
+_init_shell:
+    la   sp     , SHELL_KSTACK
     sret
 
 # trap vector
@@ -135,6 +136,9 @@ done:
 KERNEL:
     .align 4
     .asciz "Welcome to Elkernel!"
+HELLO:
+    .align 4
+    .asciz "Hello, world!"
 PROMPT:
     .align 4
     .asciz "\n$ "
