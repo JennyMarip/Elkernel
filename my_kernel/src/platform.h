@@ -17,6 +17,6 @@
 #define UART_COMPLETE   0x0c200004L
 
 // TIMER
-#define MTIME_CMP       0x2004000L
+#define MTIME_CMP       0x02004000L
 
 #endif

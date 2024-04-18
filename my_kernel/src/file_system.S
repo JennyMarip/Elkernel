@@ -8,7 +8,7 @@
 _SHELL:
     li   a0, 0x01
     la   a1, _PROMPT
-    ecall  # $
+    ecall         # $
 atom_loop:
     la   a0, SHELL_BUFFER
     lb   t0, 0(a0)
@@ -19,7 +19,7 @@ atom_loop:
 read_buffer:
     la   a1, SHELL_BUFFER
     addi a1, a1, 1
-    li   a0, 0x01
+    li   a0, 0x02 # call fork
     ecall
     
     la   a0, SHELL_BUFFER

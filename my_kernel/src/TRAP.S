@@ -1,3 +1,5 @@
+#include "os.h"
+
 .section .text
 .global  _TRAP
 
@@ -10,13 +12,29 @@ SYS_CALL:
     sw   t0  ,  8(sp)
     sw   t1  , 12(sp)    # save trap context
 
+    # trap vector table
     li   t0  ,  0x01
     beq  a0  ,  t0, SYS_PRINT
+    li   t0  ,  0x02
+    beq  a0  ,  t0, SYS_FORK
 
 SYS_PRINT:               # id : 1
     mv   a0  , a1
     call UART_PUTS
+    j    _end    
+SYS_FORK:                # id : 2
+    la   a0, _HELLO_STR
+    call _EQUAL
+    beqz t0, _b2
+    la   a0, _HELLO_WORLD
+    call UART_PUTS
+    j    _end
+_b2:
+    mv   a0, a1
+    call UART_PUTS
+    j    _end
 
+_end:
     csrr t0  , sepc
     addi t0  , t0, 4
     csrw sepc, t0        # set ret pc
@@ -27,5 +45,45 @@ SYS_PRINT:               # id : 1
     lw   t1  , 12(sp)
     addi sp  , sp,  16   # recover trap context
     sret
+
+# FUNC
+# judge whether str1(a0) eqauls str2(a1)
+# ret : t0 (1 : equal, 0 : not equal)
+_EQUAL:
+    addi sp  , sp, -24
+    sw   a0  ,  0(sp)
+    sw   a1  ,  4(sp)
+    sw   a2  ,  8(sp)
+    sw   a3  , 12(sp)
+    sw   t0  , 16(sp)
+    sw   t1  , 20(sp) # call context
+
+    mv   a2  , a0
+    mv   a3  , a1
+_loop:
+    lb   t0  , 0(a2)
+    lb   t1  , 0(a3)
+    beqz t0  , _b1
+    addi a2  , a2, 0x01
+    addi a3  , a3, 0x01
+    beq  t0  , t1, _loop
+    j    _NOT
+_b1:
+    beqz t1  , _YES
+_NOT:
+    li   t0  , 0x00
+    j    _RET
+_YES:
+    li   t0  , 0x01
+    
+_RET:
+    lw   a0  ,  0(sp)
+    lw   a1  ,  4(sp)
+    lw   a2  ,  8(sp)
+    lw   a3  , 12(sp)
+    lw   t1  , 20(sp)
+    addi sp  ,  sp, 24
+    ret
+
 
     

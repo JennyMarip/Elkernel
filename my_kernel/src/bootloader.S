@@ -198,6 +198,9 @@ UART_INIT:
 PLIC_INIT:
     .align 4
     .asciz "***** Init PLIC *****\n"
+HELLO_:
+    .align 4
+    .asciz "hello"
 HELLO:
     .align 4
     .asciz "Hello, world!"
