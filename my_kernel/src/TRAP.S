@@ -10,63 +10,79 @@ SYS_CALL:
     sw   a0  ,  0(sp)
     sw   a1  ,  4(sp)
     sw   t0  ,  8(sp)
-    sw   t1  , 12(sp)    # save trap context
+    sw   t1  , 12(sp)         # save trap context
 
     # trap vector table
-    li   t0  ,  0x01
-    beq  a0  ,  t0, SYS_PRINT
-    li   t0  ,  0x02
-    beq  a0  ,  t0, SYS_FORK
+    li   t0  ,   0x01
+    beq  a0  ,     t0, SYS_PRINT
+    li   t0  ,   0x02
+    beq  a0  ,     t0, SYS_FORK
 
-SYS_PRINT:               # id : 1
-    mv   a0  , a1
+SYS_PRINT:                    # id : 1
+    mv   a0  ,   a1
     call UART_PUTS
     j    _end    
-SYS_FORK:                # id : 2
-    la   a0, _HELLO_STR
+SYS_FORK:                     # id : 2
+    la   a0  ,   _HELLO_STR
     call _EQUAL
-    beqz t0, _b2
-    la   a0, _HELLO_WORLD
-    call UART_PUTS
-    j    _end
+    beqz t0  ,   _b2
+_b3:
+    # hello
+    la   a0  ,   HELLO_FS_ADD # load & run 
+    la   a1  ,   APP_BASE_ADD
+    addi a1  ,   a1, SHELL_LEN
+    li   t0  ,   HELLO_LEN
+_loop1:
+    beqz t0  ,   end
+    lb   t1  ,   0(a0)
+    sb   t1  ,   0(a1)
+    addi a0  ,     a0, 0x01
+    addi a1  ,     a1, 0x01
+    addi t0  ,     t0,   -1
+    j    _loop1               # load hello
+end:
+    la   a1  ,   APP_BASE_ADD
+    addi a1  ,   a1, SHELL_LEN
+    csrw sepc,   a1
+    j    _new_app
 _b2:
-    mv   a0, a1
+    mv   a0  ,   a1
     call UART_PUTS
     j    _end
 
 _end:
     csrr t0  , sepc
-    addi t0  , t0, 4
-    csrw sepc, t0        # set ret pc
-
+    addi t0  ,   t0, 4
+    csrw sepc,   t0           # set ret pc
+_new_app:
     lw   a0  ,  0(sp)
     lw   a1  ,  4(sp)
     lw   t0  ,  8(sp)
     lw   t1  , 12(sp)
-    addi sp  , sp,  16   # recover trap context
+    addi sp  ,    sp,  16     # recover trap context
     sret
 
 # FUNC
 # judge whether str1(a0) eqauls str2(a1)
 # ret : t0 (1 : equal, 0 : not equal)
 _EQUAL:
-    addi sp  , sp, -24
+    addi sp  ,    sp, -24
     sw   a0  ,  0(sp)
     sw   a1  ,  4(sp)
     sw   a2  ,  8(sp)
     sw   a3  , 12(sp)
     sw   t0  , 16(sp)
-    sw   t1  , 20(sp) # call context
+    sw   t1  , 20(sp)       # call context
 
     mv   a2  , a0
     mv   a3  , a1
-_loop:
+_loop2:
     lb   t0  , 0(a2)
     lb   t1  , 0(a3)
-    beqz t0  , _b1
-    addi a2  , a2, 0x01
-    addi a3  , a3, 0x01
-    beq  t0  , t1, _loop
+    beqz t0  ,  _b1
+    addi a2  ,   a2,   0x01
+    addi a3  ,   a3,   0x01
+    beq  t0  ,   t1, _loop2
     j    _NOT
 _b1:
     beqz t1  , _YES
@@ -82,7 +98,7 @@ _RET:
     lw   a2  ,  8(sp)
     lw   a3  , 12(sp)
     lw   t1  , 20(sp)
-    addi sp  ,  sp, 24
+    addi sp  ,    sp, 24
     ret
 
 
