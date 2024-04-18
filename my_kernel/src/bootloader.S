@@ -5,6 +5,7 @@
 .global  _start
 
 _start:
+    la   sp, KERNEL_STACK
     # bootloader (M mode)
     # info
     la   a0, TIME_INT
