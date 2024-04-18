@@ -11,9 +11,9 @@ _SHELL:
     ecall  # $
 atom_loop:
     la   a0, SHELL_BUFFER
-    lb   t4, 0(a0)
-    li   t5, 0x01
-    beq  t4, t5, read_buffer
+    lb   t0, 0(a0)
+    li   t1, 0x01
+    beq  t0, t1, read_buffer
     j    atom_loop
 # enter
 read_buffer:
@@ -24,10 +24,10 @@ read_buffer:
     
     la   a0, SHELL_BUFFER
 flush_buffer:
-    lb   t4, 0(a0)
-    beqz t4, _SHELL
-    li   t5, 0x00
-    sb   t5, 0(a0)
+    lb   t0, 0(a0)
+    beqz t0, _SHELL
+    li   t1, 0x00
+    sb   t1, 0(a0)
     addi a0, a0, 0x01
     j    flush_buffer
 # program2 : hello

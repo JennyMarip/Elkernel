@@ -82,9 +82,15 @@ _mcsr_set:
 
 # interrupt vector (M)
 _Interrupt:
+# trap context : a0, a1, t0, t1
+    addi sp, sp, -16
+    sw   a0,  0(sp)
+    sw   a1,  4(sp)
+    sw   t0,  8(sp)
+    sw   t1, 12(sp)  # save trap context
 _claim:
     la   a0, UART_CLAIM
-    lw   t0, 0(a0) # claim
+    lw   t0, 0(a0)   # claim
     beqz t0, _claim
 _handler:
     la   a0, UART0
@@ -92,7 +98,7 @@ _handler:
     li   t2, 0x0d
     beq  t1, t2, _enter 
     la   a0, UART0
-    sb   t1, 0(a0) # print
+    sb   t1, 0(a0)   # print
     la   a0, SHELL_BUFFER
 add_loop:
     addi a0, a0, 0x01
@@ -109,13 +115,19 @@ _enter:
     la   a0, TIME_INT
     lb   t2, 0(a0)
     la   a0, UART0
-    sb   t2, 0(a0) # enter & change line
+    sb   t2, 0(a0)   # enter & change line
 
 _complete:
     la   a0, UART_COMPLETE
-    sw   t0, 0(a0) # complete
+    sw   t0, 0(a0)   # complete
 
-    la   a0  , SHELL_BUFFER
+    la   a0, SHELL_BUFFER
+
+    lw   a0,  0(sp)
+    lw   a1,  4(sp)
+    lw   t0,  8(sp)
+    lw   t1, 12(sp)
+    addi sp,  sp, 16 # recover trap context
     mret
 
     la   t5, 0x80308000
