@@ -35,3 +35,5 @@ _HELLO:
     li   a0, 0x01
     la   a1, _HELLO_WORLD
     ecall
+    li   a0, 0x03
+    ecall

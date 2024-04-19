@@ -28,9 +28,30 @@ _loop:
     addi a0     , a0, 0x01
     addi a1     , a1, 0x01
     addi t0     , t0, -1
-    beqz t0     , _init_shell 
+    beqz t0     , _init_thread
     j    _loop # load shell byte by byte
-_init_shell:
+_init_thread:
+    # shell init
+    la   a0     , SHELL_TCB
+    li   a1     ,  0x00
+    sw   a1     ,  0(a0)
+    sw   a1     ,  4(a0)
+    sw   a1     ,  8(a0)
+    sw   a1     , 12(a0)
+    sw   a1     , 20(a0)
+    la   a1     , SHELL_KSTACK
+    sw   a1     , 16(a0)
+    # hello init
+    la   a0     , HELLO_TCB
+    li   a1     ,  0x00
+    sw   a1     ,  0(a0)
+    sw   a1     ,  4(a0)
+    sw   a1     ,  8(a0)
+    sw   a1     , 12(a0)
+    sw   a1     , 20(a0)
+    la   a1     , HELLO_KSTACK
+    sw   a1     , 16(a0)
+    # enter shell
     la   sp     , SHELL_KSTACK
     sret
 

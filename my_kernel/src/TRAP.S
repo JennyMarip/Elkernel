@@ -17,12 +17,16 @@ SYS_CALL:
     beq  a0  ,     t0, SYS_PRINT
     li   t0  ,   0x02
     beq  a0  ,     t0, SYS_FORK
+    li   t0  ,   0x03
+    beq  a0  ,     t0, SYS_EXIT
 
-SYS_PRINT:                    # id : 1
+# id : 1
+SYS_PRINT:
     mv   a0  ,   a1
     call UART_PUTS
-    j    _end    
-SYS_FORK:                     # id : 2
+    j    _end
+# id : 2
+SYS_FORK:                     
     la   a0  ,   _HELLO_STR
     call _EQUAL
     beqz t0  ,   _b2
@@ -41,20 +45,64 @@ _loop1:
     addi t0  ,     t0,   -1
     j    _loop1               # load hello
 end:
-    la   a1  ,   APP_BASE_ADD
-    addi a1  ,   a1, SHELL_LEN
-    csrw sepc,   a1
-    j    _new_app
+    # task context : a0, a1, t0, t1, sp, sepc
+    la   a2  ,   SHELL_TCB
+    sw   a0  ,    0(a2)
+    sw   a1  ,    4(a2)
+    sw   t0  ,    8(a2)
+    sw   t1  ,   12(a2)
+    sw   sp  ,   16(a2)
+    csrr a3  ,      sepc
+    sw   a3  ,   20(a2)       # save task context
+    la   a2  ,   HELLO_TCB
+    lw   a0  ,    0(a2)
+    lw   a1  ,    4(a2)
+    lw   t0  ,    8(a2)
+    lw   t1  ,   12(a2)
+    lw   sp  ,   16(a2)       # recover task context
+    
+    la   a2  ,   APP_BASE_ADD
+    addi a2  ,      a2, SHELL_LEN
+    csrw sepc,      a2
+    sret
+
 _b2:
     mv   a0  ,   a1
     call UART_PUTS
     j    _end
 
+# id : 3
+SYS_EXIT:
+    lw   a0  ,  0(sp)
+    lw   a1  ,  4(sp)
+    lw   t0  ,  8(sp)
+    lw   t1  , 12(sp)
+    addi sp  ,    sp,  16     # recover stack
+
+    la   a2  ,  HELLO_TCB
+    sw   a0  ,  0(a2)
+    sw   a1  ,  4(a2)
+    sw   t0  ,  8(a2)
+    sw   t1  , 12(a2)
+    sw   sp  , 16(a2) 
+    csrr a3  , sepc
+    sw   a3  , 20(a2)        # save task context
+
+    la   a2  ,  SHELL_TCB
+    lw   a0  ,  0(a2)
+    lw   a1  ,  4(a2)
+    lw   t0  ,  8(a2)
+    lw   t1  , 12(a2)
+    lw   sp  , 16(a2)
+    lw   a3  , 20(a2)
+    csrw sepc,    a3        # recover task context (shell)
+    j    _end
+
 _end:
-    csrr t0  , sepc
-    addi t0  ,   t0, 4
-    csrw sepc,   t0           # set ret pc
-_new_app:
+    csrr t0  ,  sepc
+    addi t0  ,    t0,   4
+    csrw sepc,    t0          # set ret pc
+
     lw   a0  ,  0(sp)
     lw   a1  ,  4(sp)
     lw   t0  ,  8(sp)

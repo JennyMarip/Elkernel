@@ -27,6 +27,6 @@
 #define SHELL_LEN             0x5cL
 // hello
 #define HELLO_FS_ADD    0x800002b0L
-#define HELLO_LEN             0x10L
+#define HELLO_LEN             0x18L
 
 #endif
