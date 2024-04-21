@@ -1,4 +1,4 @@
-# my_kernel
+# Elkernel
 
 RISC-V汇编语言，实现简单操作系统；环境：linux，qemu-riscv64-system
 
