@@ -14,12 +14,14 @@
 #define APP_BASE_ADD    0x80300000L
 
 // STRING
-#define _HELLO_STR      0x800013b0L
-#define _HELLO_WORLD    0x800013c0L
-#define _PROMPT         0x800013d0L
+#define _THREAD_INIT    0x800013b0L
+#define _NOT_FOUND      0x800013d0L
+#define _HELLO_STR      0x800013f0L
+#define _HELLO_WORLD    0x80001400L
+#define _PROMPT         0x80001410L
 
 // BUFFER
-#define SHELL_BUFFER    0x800013e0L
+#define SHELL_BUFFER    0x80001420L
 
 // File System
 // shell

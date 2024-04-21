@@ -7,8 +7,6 @@
 
 _start:
     # kernel (S mode)
-    la   a0     , KERNEL
-    call UART_PUTS
 _scsr_set:
     la   t0     , _TRAP
     csrw stvec  , t0
@@ -53,6 +51,10 @@ _init_thread:
     sw   a1     , 16(a0)
     # enter shell
     la   sp     , SHELL_KSTACK
+    la   a0     , _THREAD_INIT
+    call UART_PUTS
+    la   a0     , KERNEL
+    call UART_PUTS
     sret
 
 # trap vector

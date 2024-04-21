@@ -69,6 +69,8 @@ end:
 _b2:
     mv   a0  ,   a1
     call UART_PUTS
+    la   a0  ,   _NOT_FOUND
+    call UART_PUTS
     j    _end
 
 # id : 3

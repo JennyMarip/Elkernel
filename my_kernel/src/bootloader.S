@@ -198,6 +198,12 @@ UART_INIT:
 PLIC_INIT:
     .align 4
     .asciz "***** Init PLIC *****\n"
+THREAD_INIT:
+    .align 4
+    .asciz "**** Init Thread ****\n"
+NOT_FOUND:
+    .align 4
+    .asciz ": Command Not Found"
 HELLO_:
     .align 4
     .asciz "hello"
