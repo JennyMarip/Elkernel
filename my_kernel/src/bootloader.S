@@ -210,6 +210,12 @@ HELLO_:
 HELLO:
     .align 4
     .asciz "Hello, world!"
+FIB10:
+    .align 4
+    .asciz "fib10"
+FIBONACCI:
+    .align 4
+    .asciz "fibonacci: "
 PROMPT:
     .align 4
     .asciz "\n$ "
