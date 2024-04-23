@@ -24,15 +24,25 @@ _PageTable_set:
     li   a0     , (0x80200 << 10) | (0x0f)
     sw   a0     , 0(t0) # 0x80200
     la   t0     , SEC1
+    li   t1     , (0x201 << 2)
+    add  t0     , t0, t1
+    li   a0     , (0x80201 << 10) | (0x0f)
+    sw   a0     , 0(t0) # 0x80201
+    la   t0     , SEC1
     li   t1     , (0x1ff << 2)
     add  t0     , t0, t1
     li   a0     , (0x801ff << 10) | (0x0f)
-    sw   a0     , 0(t0) # 0x8020f
+    sw   a0     , 0(t0) # 0x801ff
     la   t0     , SEC1
     li   t1     , (0x210 << 2)
     add  t0     , t0, t1
     li   a0     , (0x80210 << 10) | (0x0f)
     sw   a0     , 0(t0) # 0x80210
+    la   t0     , SEC1
+    li   t1     , (0x21f << 2)
+    add  t0     , t0, t1
+    li   a0     , (0x8021f << 10) | (0x0f)
+    sw   a0     , 0(t0) # 0x8021f
     la   t0     , SEC1
     li   t1     , (0x220 << 2)
     add  t0     , t0, t1
@@ -75,9 +85,7 @@ _scsr_set:
     csrw sie    ,    t0
     li   t0     , (1 << 31) | 0x80240
     csrw satp   ,    t0 # Sv32
-    la   a0     ,  _HELLO_STR
-    call UART_PUTS
-    li   a0     , 0x01 # test
+
 
 _load_shell:
     la   a0     , SHELL_FS_ADD
@@ -123,11 +131,11 @@ _init_thread:
     la   a1     , FIB10_KSTACK
     sw   a1     , 16(a0)
     # enter shell
-    la   sp     , SHELL_KSTACK
     la   a0     , _THREAD_INIT
     call UART_PUTS
     la   a0     , KERNEL
     call UART_PUTS
+    la   sp     , SHELL_KSTACK
     sret
 
 .section .data
