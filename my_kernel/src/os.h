@@ -16,6 +16,13 @@
 
 #define APP_BASE_ADD    0x80300000L
 
+// Sv32
+#define SPTBR           0x80240000L // Page Table BaseAddr
+#define SEC1            0x80241000L // second (0x80200, 0x80210, 0x80220, 0x80230, 0x80300, 0x80001, 0x80000)
+#define SEC2            0x80242000L // second (0x10000, 0x0c000)
+
+
+
 // STRING
 #define _THREAD_INIT    0x80001450L
 #define _NOT_FOUND      0x80001470L
