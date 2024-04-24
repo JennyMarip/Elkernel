@@ -8,12 +8,13 @@ _start:
     # kernel (S mode)
     la   sp     , KERNEL_STACK
 _PageTable_set:
-    la   t0     , SPTBR
+    # S PageTable
+    la   t0     , SPTBR_S
     li   t1     , (1 << 11)
     add  t0     , t0, t1 
     li   a0     , (0x80241 << 10) | (0x01)
     sw   a0     , 0(t0) # SEC1
-    la   t0     , SPTBR
+    la   t0     , SPTBR_S
     li   t1     , (1 << 8)
     add  t0     , t0, t1
     li   a0     , (0x80242 << 10) | (0x01)
@@ -52,7 +53,7 @@ _PageTable_set:
     li   t1     , (0x230 << 2)
     add  t0     , t0, t1
     li   a0     , (0x80230 << 10) | (0x0f)
-    sw   a0     , 0(t0) # 0x80230
+    sw   a0     , 0(t0) # 0x80230p
     la   t0     , SEC1
     li   t1     , (0x300 << 2)
     add  t0     , t0, t1
@@ -73,6 +74,22 @@ _PageTable_set:
     add  t0     , t0, t1
     li   a0     , (0x10000 << 10) | (0x0f)
     sw   a0     , 0(t0) # 0x10000
+    # U PageTable
+    la   t0     , SPTBR_U
+    li   t1     , (1 << 11)
+    add  t0     , t0, t1
+    li   a0     , (0x80244 << 10) | (0x11)
+    sw   a0     , 0(t0) # SEC3
+    la   t0     , SEC3
+    li   t1     , (0x300 << 2)
+    add  t0     , t0, t1
+    li   a0     , (0x80300 << 10) | (0x1f)
+    sw   a0     , 0(t0) # 0x80300
+    la   t0     , SEC3
+    li   t1     , (0x001 << 2)
+    add  t0     , t0, t1
+    li   a0     , (0x80001 << 10) | (0x1f)
+    sw   a0     , 0(t0) # 0x80001
 
 _scsr_set:
     la   t0     , _TRAP
@@ -136,6 +153,10 @@ _init_thread:
     la   a0     , KERNEL
     call UART_PUTS
     la   sp     , SHELL_KSTACK
+    csrr a0     , satp
+    li   t0     , 0x7fffffff
+    and  a0     , a0, t0
+    csrw satp   , a0 # close Sv32
     sret
 
 .section .data

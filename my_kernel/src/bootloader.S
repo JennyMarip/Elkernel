@@ -59,7 +59,7 @@ _plic_init:
     addi a0, a0, 0x60
     call UART_PUTS
 _mcsr_set:
-    li   t0     , (1 << 11) | (1 << 7) | (1 << 3) | (1 << 1) | 1
+    li   t0     , (1 << 27) | (1 << 11) | (1 << 7) | (1 << 3) | (1 << 1) | 1
     csrw mstatus, t0
     li   t0     , (1 << 11) | (1 << 7) | (1 << 3)
     csrw mie    , t0
