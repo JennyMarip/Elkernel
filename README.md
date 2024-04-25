@@ -1,6 +1,6 @@
 # Elkernel
 
-RISC-V汇编语言，实现简单操作系统；环境：linux，qemu-riscv64-system
+RISC-V汇编语言，实现 Rv32 操作系统；环境：linux，qemu-riscv64-system
 
 在my_kernel目录下make run（具体方法见rule.mk）
 
