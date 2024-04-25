@@ -1,12 +1,12 @@
 # Elkernel
 
-RISC-V汇编语言，实现 Rv32 操作系统；环境：linux，qemu-riscv64-system
+Rv32 操作系统 by RISC-V asm
 
-在my_kernel目录下make run（具体方法见rule.mk）
+在my_kernel目录下make run运行（其他命令见rule.mk）
 
-环境: ubuntu20.04
+环境: ubuntu20.04，qemu-riscv64-system
 
-执行下两条（下载GNU toolchain，qemu）
+下载GNU toolchain，qemu：
 
 $ sudo apt update
 
