@@ -7,6 +7,46 @@
 _start:
     # kernel (S mode)
     la   sp     , KERNEL_STACK
+_SuperBlk_set:
+    la   a0     , SP_ADD
+    la   t0     , _SH_STR
+loop1:
+    lb   a1     , 0(t0)
+    beqz a1     , end1
+    sb   a1     , 0(a0)
+    addi a0     ,   a0, 0x01
+    addi t0     ,   t0, 0x01
+    j    loop1
+end1:
+    li   a1     , 0x20
+    sb   a1     , 0(a0)
+    la   a0     , SP_ADD
+    addi a0     ,   a0, 0x10
+    la   t0     , _HELLO_STR
+loop2:
+    lb   a1     , 0(t0)
+    beqz a1     , end2
+    sb   a1     , 0(a0)
+    addi a0     ,   a0, 0x01
+    addi t0     ,   t0, 0x01
+    j    loop2
+end2:
+    li   a1     , 0x20
+    sb   a1     , 0(a0)
+    la   a0     , SP_ADD
+    addi a0     ,   a0, 0x20
+    la   t0     , _FIB10_STR
+loop3:
+    lb   a1     , 0(t0)
+    beqz a1     , end3
+    sb   a1     , 0(a0)
+    addi a0     ,   a0, 0x01
+    addi t0     ,   t0, 0x01
+    j    loop3
+end3:
+    li   a1     , 0x20
+    sb   a1     , 0(a0)
+
 _PageTable_set:
     # S PageTable
     la   t0     , SPTBR_S

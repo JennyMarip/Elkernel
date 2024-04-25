@@ -225,4 +225,7 @@ _LS:
 PROMPT:
     .align 4
     .asciz "\n$ "
+SHELL:
+    .align 4
+    .asciz "sh"
 

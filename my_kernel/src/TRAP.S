@@ -1,4 +1,5 @@
 #include "os.h"
+#include "platform.h"
 
 .section .text
 .global  _TRAP
@@ -73,8 +74,8 @@ end1:
     la   a2  ,   APP_BASE_ADD
     addi a2  ,      a2, SHELL_LEN
     csrw sepc,      a2
-    # li   a3  ,   (1 << 31) | 0x80240
-    # csrw satp,      a3
+    li   a3  ,   (1 << 31) | 0x80240
+    csrw satp,      a3
     sret
 
 _RUN_FIB10:
@@ -117,7 +118,11 @@ end2:
 
 _RUN_LS:
     # ls
-    la   a0  ,   _LS_
+    la   a0  ,   SP_ADD
+    call UART_PUTS
+    addi a0  ,     a0, 0x10
+    call UART_PUTS
+    addi a0  ,     a0, 0x10
     call UART_PUTS
     j    _end
 

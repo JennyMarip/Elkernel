@@ -35,12 +35,15 @@
 #define _LS_STR         0x800014d0L      
 #define _LS_            0x800014e0L
 #define _PROMPT         0x800014f0L
+#define _SH_STR         0x80001500L
 
 // BUFFER
-#define SHELL_BUFFER    0x80001500L
-#define FIB10_BUFFER    0x80001510L
+#define SHELL_BUFFER    0x80001510L
+#define FIB10_BUFFER    0x80001520L
 
 // File System
+// super blk
+#define SP_ADD          0x80001530L
 // shell
 #define SHELL_FS_ADD    0x80000254L
 #define SHELL_LEN             0x5cL
