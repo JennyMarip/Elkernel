@@ -35,6 +35,9 @@ SYS_FORK:
     la   a0  ,   _FIB10_STR
     call _EQUAL
     beqz t0  ,   _RUN_FIB10
+    la   a0  ,   _LS_STR
+    call _EQUAL
+    beqz t0  ,   _RUN_LS
     j    _b2
 _RUN_HELLO:
     # hello
@@ -70,8 +73,8 @@ end1:
     la   a2  ,   APP_BASE_ADD
     addi a2  ,      a2, SHELL_LEN
     csrw sepc,      a2
-    li   a3  ,   (1 << 31) | 0x80240
-    csrw satp,      a3
+    # li   a3  ,   (1 << 31) | 0x80240
+    # csrw satp,      a3
     sret
 
 _RUN_FIB10:
@@ -111,6 +114,12 @@ end2:
     li   a3  ,   (1 << 31) | 0x80240
     csrw satp,      a3
     sret
+
+_RUN_LS:
+    # ls
+    la   a0  ,   _LS_
+    call UART_PUTS
+    j    _end
 
 _b2:
     mv   a0  ,      a1

@@ -32,11 +32,13 @@
 #define _HELLO_WORLD    0x800014a0L
 #define _FIB10_STR      0x800014b0L
 #define _FIBONACCI      0x800014c0L
-#define _PROMPT         0x800014d0L
+#define _LS_STR         0x800014d0L      
+#define _LS_            0x800014e0L
+#define _PROMPT         0x800014f0L
 
 // BUFFER
-#define SHELL_BUFFER    0x800014e0L
-#define FIB10_BUFFER    0x800014f0L
+#define SHELL_BUFFER    0x80001500L
+#define FIB10_BUFFER    0x80001510L
 
 // File System
 // shell

@@ -216,6 +216,12 @@ FIB10:
 FIBONACCI:
     .align 4
     .asciz "fibonacci: "
+LS:
+    .align 4
+    .asciz "ls"
+_LS:
+    .align 4
+    .asciz "hello fib10"
 PROMPT:
     .align 4
     .asciz "\n$ "
