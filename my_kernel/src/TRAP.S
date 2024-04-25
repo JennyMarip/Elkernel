@@ -5,6 +5,8 @@
 
 _TRAP:
 SYS_CALL:
+    li   a3  ,  0x00
+    csrw satp,  a3
     # trap context : a0, a1, t0, t1
     addi sp  ,    sp, -16
     sw   a0  ,  0(sp)
@@ -68,6 +70,8 @@ end1:
     la   a2  ,   APP_BASE_ADD
     addi a2  ,      a2, SHELL_LEN
     csrw sepc,      a2
+    li   a3  ,   (1 << 31) | 0x80240
+    csrw satp,      a3
     sret
 
 _RUN_FIB10:
@@ -104,6 +108,8 @@ end2:
     la   a2  ,   APP_BASE_ADD
     addi a2  ,      a2, SHELL_LEN
     csrw sepc,      a2
+    li   a3  ,   (1 << 31) | 0x80240
+    csrw satp,      a3
     sret
 
 _b2:
@@ -156,6 +162,8 @@ _end:
     lw   t0  ,  8(sp)
     lw   t1  , 12(sp)
     addi sp  ,    sp,  16     # recover trap context
+    li   a3  ,   (1 << 31) | 0x80240
+    csrw satp,      a3
     sret
 
 # FUNC
