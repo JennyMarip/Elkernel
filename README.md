@@ -4,7 +4,7 @@ Rv32 操作系统 by RISC-V asm
 
 # 环境: 
 
-ubuntu20.04，qemu-riscv64-system
+ubuntu20.04
 
 下载GNU toolchain，qemu：
 
